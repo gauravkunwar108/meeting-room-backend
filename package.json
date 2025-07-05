@@ -1,0 +1,27 @@
+{
+  "name": "meeting-room-booking-backend",
+  "version": "1.0.0",
+  "description": "Backend API for meeting room booking system",
+  "main": "meeting-room-backend.js",
+  "scripts": {
+    "start": "node meeting-room-backend.js",
+    "dev": "nodemon meeting-room-backend.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "meeting-room",
+    "booking",
+    "api",
+    "express",
+    "sqlite"
+  ],
+  "author": "Azrach IT",
+  "license": "MIT"
+}

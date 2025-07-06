@@ -18,18 +18,18 @@ const pool = new Pool({
   }
 });
 
-// Function to create the bookings table if it doesn't exist
+// Function to create the bookings table if it doesn't exist, enforcing camelCase
 const createTable = async () => {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS bookings (
       id SERIAL PRIMARY KEY,
       title TEXT NOT NULL,
       date TEXT NOT NULL,
-      startTime TEXT NOT NULL,
-      endTime TEXT NOT NULL,
+      "startTime" TEXT NOT NULL,
+      "endTime" TEXT NOT NULL,
       attendees INTEGER,
       notes TEXT,
-      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+      "createdAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
   `;
   try {
@@ -47,7 +47,8 @@ createTable();
 app.get('/api/bookings/:date', async (req, res) => {
   const { date } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM bookings WHERE date = $1 ORDER BY startTime', [date]);
+    // Use quoted column names to ensure correct casing
+    const result = await pool.query('SELECT * FROM bookings WHERE date = $1 ORDER BY "startTime"', [date]);
     res.json(result.rows);
   } catch (err) {
     console.error('Database error:', err);
@@ -63,11 +64,12 @@ app.post('/api/bookings', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
   
+  // Use quoted column names
   const conflictQuery = `
     SELECT * FROM bookings 
     WHERE date = $1 AND (
-      (startTime < $2 AND endTime > $3) OR 
-      (startTime >= $3 AND startTime < $2)
+      ("startTime" < $2 AND "endTime" > $3) OR 
+      ("startTime" >= $3 AND "startTime" < $2)
     )
   `;
 
@@ -77,8 +79,9 @@ app.post('/api/bookings', async (req, res) => {
       return res.status(409).json({ error: 'Time slot conflict' });
     }
 
+    // Use quoted column names
     const insertQuery = `
-      INSERT INTO bookings (title, date, startTime, endTime, attendees, notes)
+      INSERT INTO bookings (title, date, "startTime", "endTime", attendees, notes)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
